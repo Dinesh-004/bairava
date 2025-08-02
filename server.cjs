@@ -372,34 +372,35 @@ app.post('/api/change-password', (req, res) => {
 });
 
 
-//security pin
-  app.post('/api/verify-pin', (req, res) => {
-    const { deviceId, securityPIN } = req.body;
+//security password
+  app.post('/verify-user', (req, res) => {
+  const { username, password } = req.body;
 
-    if (!deviceId || !securityPIN) {
-      return res.status(400).json({ success: false, message: 'Id and PIN required' });
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required' });
+  }
+
+  const query = 'SELECT password FROM user_details WHERE user_name = ?';
+
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('❌ DB error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
     }
 
-    const query = 'SELECT security_pin FROM user_details WHERE device_Id = ?';
-    console.log(deviceId);
-    db.query(query, [deviceId], (err, results) => {
-      if (err) {
-        console.error('DB error:', err);
-        return res.status(500).json({ success: false, message: 'Database error' });
-      }
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
-      if (results.length === 0) {
-        return res.status(404).json({ success: false, message: 'User not found' });
-      }
-
-      const storedPin = results[0].security_pin;
-      if (securityPIN === storedPin) {
-        return res.json({ success: true, message: 'PIN verified' });
-      } else {
-        return res.json({ success: false, message: 'Incorrect PIN' });
-      }
-    });
+    const storedPassword = results[0].password;
+    if (password === storedPassword) {
+      return res.json({ success: true, message: 'User verified successfully' });
+    } else {
+      return res.json({ success: false, message: 'Incorrect password' });
+    }
   });
+});
+
 
 // app.post('/verify-pin', (req, res) => {
 //   const { securityPIN } = req.body;
