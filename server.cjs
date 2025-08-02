@@ -231,23 +231,25 @@ app.post('/set-password', (req, res) => {
   });
 });
 
+app.post('/check-mobile', (req, res) => {
+  const { mobileNumber } = req.body;
 
-app.post('/get-sessions', (req, res) => {
-  const { deviceId } = req.body;
-
-  if (!deviceId) {
-    return res.status(400).json({ success: false, message: 'Missing deviceId' });
+  if (!mobileNumber) {
+    return res.status(400).json({ success: false, message: 'Mobile number required' });
   }
 
-  const sql = `SELECT * FROM session_details WHERE device_id = ? ORDER BY session_date DESC`;
-
-  db.query(sql, [deviceId], (err, results) => {
+  const query = 'SELECT * FROM user_details WHERE mobile_number = ?';
+  db.query(query, [mobileNumber], (err, results) => {
     if (err) {
-      console.error('❌ Error fetching sessions:', err);
+      console.error('Database error:', err);
       return res.status(500).json({ success: false, message: 'Database error' });
     }
 
-    res.json({ success: true, sessions: results });
+    if (results.length > 0) {
+      return res.json({ success: true, exists: true, message: 'Mobile number found' });
+    } else {
+      return res.json({ success: true, exists: false, message: 'Mobile number not found' });
+    }
   });
 });
 
