@@ -380,7 +380,7 @@ app.post('/api/change-password', (req, res) => {
     return res.status(400).json({ success: false, message: 'Username and password are required' });
   }
 
-  const query = 'SELECT password FROM user_details WHERE user_name = ?';
+  const query = 'SELECT password FROM user_details WHERE username = ?';
 
   db.query(query, [username], (err, results) => {
     if (err) {
