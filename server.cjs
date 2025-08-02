@@ -215,7 +215,7 @@ app.post('/set-password', (req, res) => {
     return res.status(400).json({ success: false, message: 'Mobile number, and password required' });
   }
 
-  const sql = `UPDATE user_details SET password = ?, WHERE mobile_number = ?`;
+  const sql = `UPDATE user_details SET password = ? WHERE mobile_number = ?`;
 
   db.query(sql, [password, mobileNumber], (err, result) => {
     if (err) {
