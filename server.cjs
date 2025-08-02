@@ -207,17 +207,17 @@ app.post('/store-user-details', (req, res) => {
   });
 });
 
-// ✅ 3. Set Security PIN (Plain Text Storage)
-app.post('/set-security-pin', (req, res) => {
-  const { mobileNumber, pin, deviceId} = req.body;
+// Set Password
+app.post('/set-password', (req, res) => {
+  const { mobileNumber, password} = req.body;
 
-  if (!mobileNumber || !pin || !deviceId) {
-    return res.status(400).json({ success: false, message: 'Mobile number, PIN, and device ID are required' });
+  if (!mobileNumber || !password) {
+    return res.status(400).json({ success: false, message: 'Mobile number, and password required' });
   }
 
-  const sql = `UPDATE user_details SET security_pin = ?, status = 'completed', device_id = ? WHERE mobile_number = ?`;
+  const sql = `UPDATE user_details SET password = ?, WHERE mobile_number = ?`;
 
-  db.query(sql, [pin, deviceId, mobileNumber], (err, result) => {
+  db.query(sql, [password, mobileNumber], (err, result) => {
     if (err) {
       console.error('❌ PIN update error:', err);
       return res.status(500).json({ success: false, message: 'Database error' });
@@ -227,7 +227,7 @@ app.post('/set-security-pin', (req, res) => {
       return res.status(404).json({ success: false, message: 'Mobile number not found' });
     }
 
-    res.json({ success: true, message: 'Security PIN saved successfully (plain text)' });
+    res.json({ success: true, message: 'Password saved successfully' });
   });
 });
 
