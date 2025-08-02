@@ -167,55 +167,30 @@ app.post('/store-mobile', (req, res) => {
 // ✅ 2. Update User Details
 app.post('/store-user-details', (req, res) => {
   const {
-    deviceId,
     fullName,
-    gender,
-    dob,
-    verifiedProof,
-    schoolId,
-    aadharNumber,
-    ageCategory
+    email,
+    mobileNumber,
+    username,
+    password,
   } = req.body;
 
-  // if (!mobileNumber) {
-  //   return res.status(400).json({ success: false, message: 'Mobile number is required' });
-  // }
-
   const sql = `
-    UPDATE user_details
-    SET 
-      full_name = ?, 
-      gender = ?, 
-      dob = ?, 
-      verified_proof = ?, 
-      school_id = ?, 
-      aadhar_number = ?, 
-      age_category = ?
-    WHERE device_id = ?
-  `;  //table change for unique okay
-//   const sql = `
-//   INSERT INTO user_details (
-//     full_name, 
-//     gender, 
-//     dob, 
-//     verified_proof, 
-//     school_id, 
-//     aadhar_number, 
-//     age_category, 
-//     mobile_number
-//   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-// `;
+  INSERT INTO user_details (
+    full_name, 
+    email, 
+    mobile_number, 
+    username,
+    password
+  ) VALUES (?, ?, ?, ?, ?)
+`;
 
 
   const values = [
     fullName,
-    gender,
-    dob,
-    verifiedProof,
-    schoolId || null,
-    aadharNumber || null,
-    ageCategory,
-    deviceId
+    email,
+    mobileNumber,
+    username,
+    password,
   ];
 
   db.query(sql, values, (err, result) => {
@@ -225,7 +200,7 @@ app.post('/store-user-details', (req, res) => {
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Mobile number not found' });
+      return res.status(404).json({ success: false, message: 'Failed to update user details' });
     }
 
     res.json({ success: true, message: 'User details updated successfully' });
