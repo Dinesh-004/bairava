@@ -439,3 +439,11 @@ app.post('/reset-pin', (req, res) => {
     res.json({ success: true, message: 'PIN reset successfully' });
   });
 });
+
+app.get('/products', (req, res) => {
+  const sql = 'SELECT * FROM products';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
