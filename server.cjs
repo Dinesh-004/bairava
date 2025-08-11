@@ -447,3 +447,48 @@ app.get('/products', (req, res) => {
     res.json(results);
   });
 });
+
+app.post('/update-profile-image', (req, res) => {
+  const { username, imageBase64 } = req.body;
+
+  if (!username || !imageBase64) {
+    return res.status(400).json({ success: false, message: 'Missing username or imageBase64' });
+  }
+
+  const sql = `UPDATE user_details SET profile_image = ? WHERE username = ?`;
+
+  db.query(sql, [imageBase64, username], (err, result) => {
+    if (err) {
+      console.error('❌ Error updating profile image:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, message: 'Profile image updated' });
+  });
+});
+
+app.post('/get-profile-image', (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'username required' });
+  }
+
+  const sql = `SELECT profile_image FROM user_details WHERE username = ?`;
+
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, imageBase64: results[0].profile_image });
+  });
+});
