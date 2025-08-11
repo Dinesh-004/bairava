@@ -453,3 +453,26 @@ app.post('/update-username', (req, res) => {
     });
   });
 });
+
+app.post('/get-user-details', (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'username is required' });
+  }
+
+  const sql = `SELECT mobile_number, email FROM user_details WHERE username = ?`;
+
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      console.error('❌ Database error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, user: results[0] });
+  });
+});
