@@ -492,3 +492,38 @@ app.post('/get-profile-image', (req, res) => {
     res.json({ success: true, imageBase64: results[0].profile_image });
   });
 });
+
+app.post('/update-username', (req, res) => {
+  const { oldUsername, newUsername } = req.body;
+
+  if (!oldUsername || !newUsername) {
+    return res.status(400).json({
+      success: false,
+      message: 'Old username and new username are required'
+    });
+  }
+
+  const sql = `UPDATE user_details SET username = ? WHERE username = ?`;
+
+  db.query(sql, [newUsername, oldUsername], (err, result) => {
+    if (err) {
+      console.error('❌ Database error:', err);
+      return res.status(500).json({
+        success: false,
+        message: 'Database error'
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Username updated successfully'
+    });
+  });
+});
