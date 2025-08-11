@@ -503,9 +503,9 @@ app.post('/update-username', (req, res) => {
     });
   }
 
-  const sql = `UPDATE user_details SET username = ? WHERE username = ?`;
-
-  db.query(sql, [newUsername, oldUsername], (err, result) => {
+  // Step 1: Check if new username already exists
+  const checkSql = `SELECT * FROM user_details WHERE username = ?`;
+  db.query(checkSql, [newUsername], (err, results) => {
     if (err) {
       console.error('❌ Database error:', err);
       return res.status(500).json({
@@ -514,16 +514,35 @@ app.post('/update-username', (req, res) => {
       });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
+    if (results.length > 0) {
+      return res.status(409).json({
         success: false,
-        message: 'User not found'
+        message: 'Username already taken'
       });
     }
 
-    res.json({
-      success: true,
-      message: 'Username updated successfully'
+    // Step 2: Update username
+    const updateSql = `UPDATE user_details SET username = ? WHERE username = ?`;
+    db.query(updateSql, [newUsername, oldUsername], (err, result) => {
+      if (err) {
+        console.error('❌ Database error:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Database error'
+        });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Username updated successfully'
+      });
     });
   });
 });
