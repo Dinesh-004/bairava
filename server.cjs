@@ -461,7 +461,7 @@ app.post('/get-user-details', (req, res) => {
     return res.status(400).json({ success: false, message: 'username is required' });
   }
 
-  const sql = `SELECT mobile_number, email FROM user_details WHERE username = ?`;
+  const sql = `SELECT full_name, mobile_number, email FROM user_details WHERE username = ?`;
 
   db.query(sql, [username], (err, results) => {
     if (err) {
