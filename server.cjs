@@ -400,37 +400,18 @@ app.post('/get-profile-image', (req, res) => {
   });
 });
 
-app.post('/update-username', (req, res) => {
-  const { oldUsername, newUsername } = req.body;
+app.post('/update-fullname', (req, res) => {
+  const { fullname, username } = req.body;
 
-  if (!oldUsername || !newUsername) {
+  if (!fullname || !username) {
     return res.status(400).json({
       success: false,
-      message: 'Old username and new username are required'
+      message: 'username and fullname are required'
     });
   }
 
-  // Step 1: Check if new username already exists
-  const checkSql = `SELECT * FROM user_details WHERE username = ?`;
-  db.query(checkSql, [newUsername], (err, results) => {
-    if (err) {
-      console.error('❌ Database error:', err);
-      return res.status(500).json({
-        success: false,
-        message: 'Database error'
-      });
-    }
-
-    if (results.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'Username already taken'
-      });
-    }
-
-    // Step 2: Update username
-    const updateSql = `UPDATE user_details SET username = ? WHERE username = ?`;
-    db.query(updateSql, [newUsername, oldUsername], (err, result) => {
+    const updateSql = `UPDATE user_details SET full_name = ? WHERE username = ?`;
+    db.query(updateSql, [fullname, username], (err, result) => {
       if (err) {
         console.error('❌ Database error:', err);
         return res.status(500).json({
@@ -448,11 +429,10 @@ app.post('/update-username', (req, res) => {
 
       res.json({
         success: true,
-        message: 'Username updated successfully'
+        message: 'Name updated successfully'
       });
     });
   });
-});
 
 app.post('/get-user-details', (req, res) => {
   const { username } = req.body;
