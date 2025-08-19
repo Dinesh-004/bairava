@@ -513,3 +513,37 @@ app.get("/check-username", (req, res) => {
     }
   );
 });
+
+app.post("/change-password", (req, res) => {
+  const { username, currentPassword, newPassword } = req.body;
+
+  if (!username || !currentPassword || !newPassword) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  db.query(
+    "SELECT * FROM users WHERE username = ?",
+    [username],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      if (results.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const user = results[0];
+
+      if (user.password !== currentPassword) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+
+      db.query(
+        "UPDATE user_details SET password = ? WHERE username = ?",
+        [newPassword, username],
+        (err) => {
+          if (err) return res.status(500).json({ error: err });
+          return res.json({ message: "Password updated successfully" });
+        }
+      );
+    }
+  );
+});
