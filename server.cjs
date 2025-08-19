@@ -495,3 +495,21 @@ app.get("/get-appointments", (req, res) => {
     res.json(results);
   });
 });
+
+app.get("/check-username", (req, res) => {
+  const username = req.query.username;
+
+  db.query(
+    "SELECT COUNT(*) AS count FROM users WHERE username = ?",
+    [username],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (results[0].count > 0) {
+        res.json({ exists: true });
+      } else {
+        res.json({ exists: false });
+      }
+    }
+  );
+});
