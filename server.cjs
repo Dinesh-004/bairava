@@ -522,7 +522,7 @@ app.post("/change-password", (req, res) => {
   }
 
   db.query(
-    "SELECT * FROM users WHERE username = ?",
+    "SELECT * FROM user_details WHERE username = ?",
     [username],
     (err, results) => {
       if (err) return res.status(500).json({ error: err });
