@@ -456,3 +456,42 @@ app.post('/get-user-details', (req, res) => {
     res.json({ success: true, user: results[0] });
   });
 });
+
+app.post("/update-appointments", (req, res) => {
+  const {
+    name,
+    gender,
+    appointment_date,
+    appointment_time,
+    breed,
+    color,
+    weight,
+    description
+  } = req.body;
+
+  const sql = `INSERT INTO appointments 
+    (name, gender, appointment_date, appointment_time, breed, color, weight, description) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(
+    sql,
+    [name, gender, appointment_date, appointment_time, breed, color, weight, description],
+    (err, result) => {
+      if (err) {
+        console.error("❌ Error inserting data:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ message: "✅ Appointment booked successfully", appointmentId: result.insertId });
+    }
+  );
+});
+
+app.get("/get-appointments", (req, res) => {
+  db.query("SELECT * FROM appointments ORDER BY created_at DESC", (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching data:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
