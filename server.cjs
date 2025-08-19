@@ -500,7 +500,7 @@ app.get("/check-username", (req, res) => {
   const username = req.query.username;
 
   db.query(
-    "SELECT COUNT(*) AS count FROM users WHERE username = ?",
+    "SELECT COUNT(*) AS count FROM user_details WHERE username = ?",
     [username],
     (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
