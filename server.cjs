@@ -570,7 +570,6 @@ app.post('/api/save-order', (req, res) => {
       orderId,
       product.id,
       product.title,
-      product.variant,
       product.unitPrice,
       product.quantity,
       product.lineTotal
@@ -578,7 +577,7 @@ app.post('/api/save-order', (req, res) => {
 
     const itemsQuery = `
       INSERT INTO order_items
-      (order_id, product_id, title, variant, unit_price, quantity, line_total)
+      (order_id, product_id, title, unit_price, quantity, line_total)
       VALUES ?
     `;
 
