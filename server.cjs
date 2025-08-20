@@ -466,16 +466,18 @@ app.post("/update-appointments", (req, res) => {
     breed,
     color,
     weight,
-    description
+    description,
+    status,
+    username
   } = req.body;
 
   const sql = `INSERT INTO appointments 
-    (name, gender, appointment_date, appointment_time, breed, color, weight, description) 
+    (name, gender, appointment_date, appointment_time, breed, color, weight, description, status, username) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
-    [name, gender, appointment_date, appointment_time, breed, color, weight, description],
+    [name, gender, appointment_date, appointment_time, breed, color, weight, description, status, username],
     (err, result) => {
       if (err) {
         console.error("❌ Error inserting data:", err);
@@ -486,15 +488,32 @@ app.post("/update-appointments", (req, res) => {
   );
 });
 
+
 app.get("/get-appointments", (req, res) => {
-  db.query("SELECT * FROM appointments ORDER BY created_at DESC", (err, results) => {
-    if (err) {
-      console.error("❌ Error fetching data:", err);
-      return res.status(500).json({ error: "Database error" });
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
+  }
+
+  db.query(
+    "SELECT * FROM appointments WHERE username = ? ORDER BY created_at DESC",
+    [username],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error fetching data:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: "No appointments found for this user" });
+      }
+
+      res.json(results);
     }
-    res.json(results);
-  });
+  );
 });
+
 
 app.get("/check-username", (req, res) => {
   const username = req.query.username;
