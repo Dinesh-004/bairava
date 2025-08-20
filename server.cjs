@@ -473,7 +473,7 @@ app.post("/update-appointments", (req, res) => {
 
   const sql = `INSERT INTO appointments 
     (name, gender, appointment_date, appointment_time, breed, color, weight, description, status, username) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
