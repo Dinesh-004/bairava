@@ -547,3 +547,78 @@ app.post("/change-password", (req, res) => {
     }
   );
 });
+
+app.post('/api/save-order', (req, res) => {
+  const { products, address, paymentMethod, total, username } = req.body;
+
+  if (!Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({ success: false, message: 'No products provided' });
+  }
+
+  const orderQuery = `
+    INSERT INTO orders (address, payment_method, total, username)
+    VALUES (?, ?, ?, ?)
+  `;
+  db.query(orderQuery, [address, paymentMethod, total, username], (orderErr, orderResult) => {
+    if (orderErr) {
+      console.error('Order insert error:', orderErr);
+      return res.status(500).json({ success: false, message: 'Server error (orders)' });
+    }
+
+    const orderId = orderResult.insertId;
+    const itemValues = products.map(product => [
+      orderId,
+      product.id,
+      product.title,
+      product.variant,
+      product.unitPrice,
+      product.quantity,
+      product.lineTotal
+    ]);
+
+    const itemsQuery = `
+      INSERT INTO order_items
+      (order_id, product_id, title, variant, unit_price, quantity, line_total)
+      VALUES ?
+    `;
+
+    db.query(itemsQuery, [itemValues], (itemsErr, itemsResult) => {
+      if (itemsErr) {
+        console.error('Order items insert error:', itemsErr);
+        return res.status(500).json({ success: false, message: 'Server error (order_items)' });
+      }
+
+      res.json({ success: true, message: 'Order saved successfully', orderId });
+    });
+  });
+});
+
+app.post('/orders', (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ error: 'username is required' });
+  }
+
+  const orderQuery = 'SELECT * FROM orders WHERE username = ? ORDER BY created_at DESC';
+  const itemsQuery = 'SELECT * FROM order_items';
+
+  db.query(orderQuery, [username], (err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+
+    db.query(itemsQuery, (err, items) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to fetch order items' });
+      }
+
+      const result = orders.map((order) => {
+        const orderItems = items.filter((item) => item.order_id === order.order_id);
+        return { ...order, items: orderItems };
+      });
+
+      res.json(result);
+    });
+  });
+});
