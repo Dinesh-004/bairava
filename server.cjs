@@ -640,3 +640,47 @@ app.post('/orders', (req, res) => {
     });
   });
 });
+
+// API to get all pets
+app.get("/pets", (req, res) => {
+  db.query("SELECT * FROM pets", (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// API to add new pet
+app.post("/pets", (req, res) => {
+  const { name, breed, age, weight, color, image } = req.body;
+  db.query(
+    "INSERT INTO pets (name, breed, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?)",
+    [name, breed, age, weight, color, image],
+    (err, results) => {
+      if (err) {
+        res.status(500).json({ error: err });
+      } else {
+        res.json({ message: "Pet added successfully!" });
+      }
+    }
+  );
+});
+
+// API to update pet
+app.put("/pets/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, breed, age, weight, color, image } = req.body;
+  db.query(
+    "UPDATE pets SET name=?, breed=?, age=?, weight=?, color=?, image=? WHERE id=?",
+    [name, breed, age, weight, color, image, id],
+    (err, results) => {
+      if (err) {
+        res.status(500).json({ error: err });
+      } else {
+        res.json({ message: "Pet updated successfully!" });
+      }
+    }
+  );
+});
