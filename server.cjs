@@ -656,8 +656,8 @@ app.get("/pets", (req, res) => {
 app.post("/pets", (req, res) => {
   const { name, breed, age, weight, color, image } = req.body;
   db.query(
-    "INSERT INTO pets (name, breed, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?)",
-    [name, breed, age, weight, color, image],
+    "INSERT INTO pets (name, breed, gender, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?)",
+    [name, breed, gender, age, weight, color, image],
     (err, results) => {
       if (err) {
         res.status(500).json({ error: err });
@@ -671,10 +671,10 @@ app.post("/pets", (req, res) => {
 // API to update pet
 app.put("/pets/:id", (req, res) => {
   const { id } = req.params;
-  const { name, breed, age, weight, color, image } = req.body;
+  const { name, breed, gender, age, weight, color, image } = req.body;
   db.query(
-    "UPDATE pets SET name=?, breed=?, age=?, weight=?, color=?, image=? WHERE id=?",
-    [name, breed, age, weight, color, image, id],
+    "UPDATE pets SET name=?, breed=?, gender=?, age=?, weight=?, color=?, image=? WHERE id=?",
+    [name, breed, gender, age, weight, color, image, id],
     (err, results) => {
       if (err) {
         res.status(500).json({ error: err });
