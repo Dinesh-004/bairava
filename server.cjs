@@ -718,3 +718,12 @@ app.post('/verify-payment', (req, res) => {
     res.status(400).json({ success: false, message: 'Signature verification failed' });
   }
 });
+
+app.get("/payment/:id", async (req, res) => {
+  try {
+    const payment = await instance.payments.fetch(req.params.id);
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
