@@ -62,7 +62,9 @@ app.use(express.json());
 const otpStore = {};                  // { "mobileNumber": "1234" }
 const registeredMobiles = new Set(); // [ "9876543210" ]
 
-
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
 
 
 //SEND OTP
