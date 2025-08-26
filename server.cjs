@@ -721,7 +721,7 @@ app.post('/verify-payment', (req, res) => {
 
 app.get("/payment/:id", async (req, res) => {
   try {
-    const payment = await instance.payments.fetch(req.params.id);
+    const payment = await razorpay.payments.fetch(req.params.id);
     res.json(payment);
   } catch (err) {
     res.status(500).json({ error: err.message });
