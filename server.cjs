@@ -729,3 +729,13 @@ app.get("/payment/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.get("/adopt-pet", (req, res) => {
+  db.query("SELECT * FROM pets", (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
+});
