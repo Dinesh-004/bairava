@@ -731,7 +731,7 @@ app.get("/payment/:id", async (req, res) => {
 });
 
 app.get("/adopt-pet", (req, res) => {
-  db.query("SELECT * FROM pets", (err, results) => {
+  db.query("SELECT * FROM adoptions", (err, results) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
