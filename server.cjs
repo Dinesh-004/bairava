@@ -748,13 +748,14 @@ app.post("/save-hotel-booking", async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
-    const newBooking = new HotelBooking({
-      booking,
-      paymentMethod,
-      username,
-    });
+    // Insert into DB
+    const conn = await pool.getConnection();
+    await conn.execute(
+      "INSERT INTO hotel_bookings (username, booking, paymentMethod, createdAt) VALUES (?, ?, ?, NOW())",
+      [username, JSON.stringify(booking), paymentMethod]
+    );
+    conn.release();
 
-    await newBooking.save();
     res.status(200).json({ success: true, message: "Booking saved successfully" });
 
   } catch (error) {
