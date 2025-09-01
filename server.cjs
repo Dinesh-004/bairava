@@ -740,26 +740,24 @@ app.get("/adopt-pet", (req, res) => {
   });
 });
 
-app.post("/save-hotel-booking", async (req, res) => {
-  try {
-    const { booking, paymentMethod, username } = req.body;
+// Save hotel booking
+app.post("/save-hotel-booking", (req, res) => {
+  const { booking, paymentMethod, username } = req.body;
 
-    if (!booking || !username) {
-      return res.status(400).json({ success: false, message: "Missing fields" });
-    }
-
-    // Insert into DB
-    const conn = await pool.getConnection();
-    await conn.execute(
-      "INSERT INTO hotel_bookings (username, booking, paymentMethod, createdAt) VALUES (?, ?, ?, NOW())",
-      [username, JSON.stringify(booking), paymentMethod]
-    );
-    conn.release();
-
-    res.status(200).json({ success: true, message: "Booking saved successfully" });
-
-  } catch (error) {
-    console.error("❌ Error saving booking:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+  if (!booking || !username) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
   }
+
+  // Save into hotel_bookings table
+  db.query(
+    "INSERT INTO hotel_bookings (username, booking, paymentMethod, createdAt) VALUES (?, ?, ?, NOW())",
+    [username, JSON.stringify(booking), paymentMethod],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error saving booking:", err);
+        return res.status(500).json({ success: false, message: "Database error", error: err });
+      }
+      res.json({ success: true, message: "Booking saved successfully!" });
+    }
+  );
 });
