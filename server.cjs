@@ -739,3 +739,26 @@ app.get("/adopt-pet", (req, res) => {
     }
   });
 });
+
+app.post("/save-hotel-booking", async (req, res) => {
+  try {
+    const { booking, paymentMethod, username } = req.body;
+
+    if (!booking || !username) {
+      return res.status(400).json({ success: false, message: "Missing fields" });
+    }
+
+    const newBooking = new HotelBooking({
+      booking,
+      paymentMethod,
+      username,
+    });
+
+    await newBooking.save();
+    res.status(200).json({ success: true, message: "Booking saved successfully" });
+
+  } catch (error) {
+    console.error("❌ Error saving booking:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
