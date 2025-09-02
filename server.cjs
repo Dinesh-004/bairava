@@ -742,15 +742,15 @@ app.get("/adopt-pet", (req, res) => {
 
 // Save hotel booking
 app.post("/save-hotel-booking", (req, res) => {
-  const { username, roomType, checkInDate, checkOutDate, paymentMethod } = req.body;
+  const { username, roomType, checkInDate, checkOutDate, paymentMethod, price } = req.body;
 
-  if (!username || !roomType || !checkInDate || !checkOutDate) {
+  if (!username || !roomType || !checkInDate || !checkOutDate || !price) {
     return res.status(400).json({ success: false, message: "Missing required fields" });
   }
 
   db.query(
-    "INSERT INTO hotel_bookings (username, roomType, checkInDate, checkOutDate, paymentMethod) VALUES (?, ?, ?, ?, ?)",
-    [username, roomType, checkInDate, checkOutDate, paymentMethod],
+    "INSERT INTO hotel_bookings (username, roomType, checkInDate, checkOutDate, paymentMethod, price) VALUES (?, ?, ?, ?, ?, ?)",
+    [username, roomType, checkInDate, checkOutDate, paymentMethod, price],
     (err, results) => {
       if (err) {
         console.error("❌ Error saving booking:", err);
@@ -760,4 +760,5 @@ app.post("/save-hotel-booking", (req, res) => {
     }
   );
 });
+
 
