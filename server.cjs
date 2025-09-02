@@ -761,4 +761,19 @@ app.post("/save-hotel-booking", (req, res) => {
   );
 });
 
+app.get("/get-hotel-bookings/:username", (req, res) => {
+  const { username } = req.params;
+  db.query(
+    "SELECT * FROM hotel_bookings WHERE username = ? ORDER BY checkInDate DESC",
+    [username],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Error fetching bookings:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+      res.json({ success: true, bookings: results });
+    }
+  );
+});
+
 
