@@ -777,34 +777,52 @@ app.get("/get-hotel-bookings/:username", (req, res) => {
 });
 
 // POST /add-review
-app.post("/add-review", async (req, res) => {
+app.post("/add-review", (req, res) => {
   const { productId, user, rating, comment } = req.body;
 
   if (!productId || !user || !rating) {
     return res.json({ success: false, message: "Missing fields" });
   }
 
-  const review = {
-    productId,
-    user,
-    rating,
-    comment,
-    date: new Date().toISOString().slice(0, 10)
-  };
+  const sql =
+    "INSERT INTO product_reviews (productId, username, rating, comment) VALUES (?, ?, ?, ?)";
+  db.query(sql, [productId, user, rating, comment], (err, result) => {
+    if (err) {
+      console.error("❌ Error inserting review:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error" });
+    }
 
-  // Example: Save to MongoDB/MySQL
-  await db.collection("reviews").insertOne(review);
-
-  res.json({ success: true, message: "Review added", review });
+    res.json({
+      success: true,
+      message: "Review added",
+      review: {
+        id: result.insertId,
+        productId,
+        user,
+        rating,
+        comment,
+        date: new Date().toISOString().slice(0, 10),
+      },
+    });
+  });
 });
 
 // GET /get-reviews/:productId
-app.get("/get-reviews/:productId", async (req, res) => {
+app.get("/get-reviews/:productId", (req, res) => {
   const { productId } = req.params;
-  const reviews = await db.collection("reviews")
-                          .find({ productId })
-                          .toArray();
 
-  res.json({ success: true, reviews });
+  const sql =
+    "SELECT id, productId, username AS user, rating, comment, date FROM product_reviews WHERE productId = ? ORDER BY date DESC";
+  db.query(sql, [productId], (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching reviews:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, reviews: results });
+  });
 });
-
