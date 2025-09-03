@@ -776,4 +776,35 @@ app.get("/get-hotel-bookings/:username", (req, res) => {
   );
 });
 
+// POST /add-review
+app.post("/add-review", async (req, res) => {
+  const { productId, user, rating, comment } = req.body;
+
+  if (!productId || !user || !rating) {
+    return res.json({ success: false, message: "Missing fields" });
+  }
+
+  const review = {
+    productId,
+    user,
+    rating,
+    comment,
+    date: new Date().toISOString().slice(0, 10)
+  };
+
+  // Example: Save to MongoDB/MySQL
+  await db.collection("reviews").insertOne(review);
+
+  res.json({ success: true, message: "Review added", review });
+});
+
+// GET /get-reviews/:productId
+app.get("/get-reviews/:productId", async (req, res) => {
+  const { productId } = req.params;
+  const reviews = await db.collection("reviews")
+                          .find({ productId })
+                          .toArray();
+
+  res.json({ success: true, reviews });
+});
 
