@@ -660,8 +660,8 @@ app.get("/pets", (req, res) => {
 app.post("/pets", (req, res) => {
   const { name, breed, gender,age, weight, color, image } = req.body;
   db.query(
-    "INSERT INTO pets (name, breed, gender, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?)",
-    [name, breed, gender, age, weight, color, image || null],
+    "INSERT INTO pets (name, breed, gender, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [name, breed, gender, age, weight, color, image],
     (err, results) => {
       if (err) {
         res.status(500).json({ error: err });
