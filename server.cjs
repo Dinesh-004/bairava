@@ -658,7 +658,7 @@ app.get("/pets", (req, res) => {
 
 // API to add new pet
 app.post("/pets", (req, res) => {
-  const { name, breed, age, weight, color, image } = req.body;
+  const { name, breed, gender,age, weight, color, image } = req.body;
   db.query(
     "INSERT INTO pets (name, breed, gender, age, weight, color, image) VALUES (?, ?, ?, ?, ?, ?)",
     [name, breed, gender, age, weight, color, image],
