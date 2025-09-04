@@ -689,6 +689,21 @@ app.put("/pets/:id", (req, res) => {
   );
 });
 
+// Delete pet
+app.delete("/delete-pet/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM pets WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error deleting pet");
+    } else if (result.affectedRows === 0) {
+      res.status(404).send("Pet not found");
+    } else {
+      res.json({ message: "Pet deleted successfully" });
+    }
+  });
+});
+
 // Create payment order endpoint
 app.post('/create-order', async (req, res) => {
   const { amount, currency = 'INR', receipt = 'receipt_001' } = req.body;
